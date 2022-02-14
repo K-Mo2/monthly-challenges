@@ -17,3 +17,6 @@ def monthly_challenges(request, month):
         return HttpResponseNotFound("This month is not supprted!")
     
     return HttpResponse(challenge_text)
+
+def monthly_challenges_by_number(request, month):
+    return HttpResponse(month)
