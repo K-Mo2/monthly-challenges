@@ -1,8 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.template.loader import render_to_string
-
+from django.views import View
 # Create your views here.
 monthly_challenges = {
     'januray':'Eat no meat for the entire month!',
@@ -12,17 +11,16 @@ monthly_challenges = {
     'may':'Eat vegetables for 30 days',
 }
 
-def index(request):
-    list_items = ""
-    months = list(monthly_challenges.keys())
+class indexView(View):
 
-    for month in months:
-        capitalize_months = month.capitalize()
-        month_path = reverse("month-challenge", args=[month])
-        list_items += f"<li> <a href='{month_path}'>{capitalize_months}</a></li>"
-        
-    response_data = f"<ol>{list_items}</ol>"
-    return HttpResponse(response_data)
+
+    def get(self,request):
+   
+        months = list(monthly_challenges.keys())
+
+        return render(request, 'challenges/index.html', {
+            "months":months
+        })
 
 def monthly_challenge_by_number(request, month):
     months = list(monthly_challenges.keys())
@@ -38,8 +36,10 @@ def monthly_challenge_by_number(request, month):
 def monthly_challenge(request, month):
     try:
         challenge_text = monthly_challenges[month]
-        response_data = render_to_string('challenges/challenge.html')
-        return HttpResponse(response_data)
+        return render(request, 'challenges/challenge.html', {
+            "text": challenge_text,
+            "month":month,
+        })
 
     except:
         return HttpResponseNotFound("This month is not supported!")
